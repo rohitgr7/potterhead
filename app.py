@@ -16,7 +16,11 @@ def _main():
     if question:
         with st.spinner("Searching..."):
             answer = get_answer(all_contexts, question, api_key=st.secrets["OPENAI_API_KEY"])
-        st.markdown(f"""<span style="word-wrap:break-word;">{answer}</span>""", unsafe_allow_html=True)
+
+        if isinstance(answer, dict):
+            st.error(answer["error"])
+        else:
+            st.markdown(f"""<span style="word-wrap:break-word;">{answer}</span>""", unsafe_allow_html=True)
 
     st.write("##")
     st.write("##")

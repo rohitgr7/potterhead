@@ -39,6 +39,10 @@ def get_embeddings(text, api_key=None):
         "model": "text-embedding-ada-002",
     }
     response = requests.post("https://api.openai.com/v1/embeddings", headers=HEADERS, json=json_data)
+
+    if response.status_code == 429:
+        return {"error": "Limit exceeded! Please try after some time."}
+
     return response.json()["data"][0]["embedding"]
 
 
@@ -70,6 +74,10 @@ def generate_answer(context, question, api_key):
 
 def get_answer(all_contexts, ques, api_key):
     ques_embed = get_embeddings(ques, api_key)
+
+    if isinstance(ques_embed, dict) and "error" in ques_embed:
+        return ques_embed
+
     sim = []
 
     for i, x in enumerate(all_contexts):
