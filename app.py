@@ -25,9 +25,17 @@ def _main():
     st.write("##")
     st.write("##")
     st.write("##")
+    st.write("##")
+    st.write("##")
     st.markdown(
         """
         <p style='display: block; text-align: center;'>Made by <a href="https://twitter.com/imgrohit">@imgrohit</a></p>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <p style='display: block; text-align: center;'>Built with <a href="https://openai.com/api/">Open AI GPT3</a></p>
         """,
         unsafe_allow_html=True,
     )
