@@ -18,6 +18,16 @@ def _main():
             answer = get_answer(all_contexts, question, api_key=st.secrets["OPENAI_API_KEY"])
         st.markdown(f"""<span style="word-wrap:break-word;">{answer}</span>""", unsafe_allow_html=True)
 
+    st.write("##")
+    st.write("##")
+    st.write("##")
+    st.markdown(
+        """
+        <p style='display: block; text-align: center;'>Made by <a href="https://twitter.com/imgrohit">@imgrohit</a></p>
+        """,
+        unsafe_allow_html=True,
+    )
+
 
 if __name__ == "__main__":
     _main()
