@@ -1,0 +1,5 @@
+openai==0.26.5
+nnsplit==0.5.8.post0
+requests==2.28.2
+streamlit==1.18.1
+tqdm==4.64.1
