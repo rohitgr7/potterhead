@@ -63,7 +63,7 @@ def generate_answer(context, question, api_key):
     """
 
     json_data = {
-        "model": "text-curie-001",  # text-davinci-003
+        "model": "text-davinci-003",  # text-davinci-003
         "prompt": prompt,
         "temperature": 1,
         "max_tokens": 128,
