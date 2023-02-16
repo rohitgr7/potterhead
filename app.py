@@ -1,11 +1,19 @@
 import json
 
 import streamlit as st
+from nnsplit import NNSplit
 
 from models import get_answer
 
 
+@st.cache_resource
+def load_splitter():
+    return NNSplit.load("en")
+
+
 def _main():
+    splitter = load_splitter()
+
     with open("context_embeddings.json") as f:
         all_contexts = json.load(f)
 
@@ -15,7 +23,7 @@ def _main():
     question = st.text_input("Hey! Ask anything about Harry Potter!")
     if question:
         with st.spinner("Searching..."):
-            answer = get_answer(all_contexts, question, api_key=st.secrets["OPENAI_API_KEY"])
+            answer = get_answer(all_contexts, question, splitter, api_key=st.secrets["OPENAI_API_KEY"])
 
         if isinstance(answer, dict):
             st.error(answer["error"])

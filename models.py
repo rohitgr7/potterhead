@@ -65,14 +65,14 @@ def generate_answer(context, question, api_key):
     json_data = {
         "model": "text-davinci-003",  # text-davinci-003
         "prompt": prompt,
-        "temperature": 1,
+        "temperature": 0.2,
         "max_tokens": 128,
     }
     response = requests.post("https://api.openai.com/v1/completions", headers=HEADERS, json=json_data)
     return response.json()["choices"][0]["text"].strip()
 
 
-def get_answer(all_contexts, ques, api_key):
+def get_answer(all_contexts, ques, splitter, api_key):
     ques_embed = get_embeddings(ques, api_key)
 
     if isinstance(ques_embed, dict) and "error" in ques_embed:
@@ -99,6 +99,13 @@ def get_answer(all_contexts, ques, api_key):
     if answer.lower() == "i don't know.":
         return "That's an interesting question, but I'm not sure it's quite relevant."
 
+    splits = splitter.split([answer])[0]
+    data = [str(x).strip() for x in splits]
+
+    if not data[-1].endswith("."):
+        data = data[:-1]
+
+    answer = " ".join(data)
     return answer
 
 
@@ -131,9 +138,8 @@ if __name__ == "__main__":
         data = [str(x) for x in splits]
 
         step = 10
-
-        for i in tqdm(range(0, len(data), 15), leave=False, total=len(data) // 15):
-            context = "".join(data[i : i + 15])
+        for i in tqdm(range(0, len(data), step), leave=False, total=len(data) // step):
+            context = "".join(data[i : i + step])
             embedding = get_embeddings(context)
             all_context.append({"context": context, "embedding": embedding})
 
