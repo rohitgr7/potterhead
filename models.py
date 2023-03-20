@@ -46,34 +46,61 @@ def get_embeddings(text, api_key=None):
     return response.json()["data"][0]["embedding"]
 
 
-def generate_answer(context, question, api_key):
-    HEADERS = {"Content-type": "application/json", "Authorization": f"Bearer {api_key}"}
+def get_standalone_question(question, prev_questions, prev_answers, api_key):
+    history = [(ques, ans) for ques, ans in zip(prev_questions, prev_answers)]
+    promp = f"""
+    Given the following conversation and a follow up question, rephrase the follow up question to be a standalone
+    question.
 
+    Chat History:
+    {history}
+    Follow Up Input: {question}
+    Standalone question
+    """
+
+    headers = {"Content-type": "application/json", "Authorization": f"Bearer {api_key}"}
+    json_data = {
+        "model": "text-davinci-003",  # text-davinci-003
+        "prompt": promp,
+        "temperature": 0.2,
+        "max_tokens": 128,
+    }
+    response = requests.post("https://api.openai.com/v1/completions", headers=headers, json=json_data)
+    return response.json()["choices"][0]["text"].strip()
+
+
+def generate_answer(context, question, api_key):
     prompt = f"""
-    Write a descriptive answer in past sense to the following question given the following passage. If you can't find an answer, just say I don't know:
+    As an AI assistant, your role is to provide accurate responses to questions. You will be presented with excerpts
+    from a lengthy movie plot and a corresponding query. Your response should be conversational and based on the given
+    context. If you are unable to find the answer within the context, simply state, "Hmm, I'm not sure." Please refrain
+    from fabricating an answer if one cannot be found. If the question is unrelated to the context, kindly inform the
+    user that your expertise is limited to answering context-related questions.
+
+    QUESTION:
+
+    {question}
 
     PASSAGE:
     {context}
 
-    QUESTION:
-    {question}
-
     ANSWER:
-
     """
 
+    headers = {"Content-type": "application/json", "Authorization": f"Bearer {api_key}"}
     json_data = {
         "model": "text-davinci-003",  # text-davinci-003
         "prompt": prompt,
         "temperature": 0.2,
         "max_tokens": 128,
     }
-    response = requests.post("https://api.openai.com/v1/completions", headers=HEADERS, json=json_data)
+    response = requests.post("https://api.openai.com/v1/completions", headers=headers, json=json_data)
     return response.json()["choices"][0]["text"].strip()
 
 
-def get_answer(all_contexts, ques, splitter, api_key):
-    ques_embed = get_embeddings(ques, api_key)
+def get_answer(all_contexts, question, splitter, prev_questions, prev_answers, api_key):
+    standalone_question = get_standalone_question(question, prev_questions, prev_answers, api_key)
+    ques_embed = get_embeddings(standalone_question, api_key)
 
     if isinstance(ques_embed, dict) and "error" in ques_embed:
         return ques_embed
@@ -94,7 +121,7 @@ def get_answer(all_contexts, ques, splitter, api_key):
 
     contexts = list(itemgetter(*ids)(all_contexts))
     search_context = "".join(x["context"] for x in contexts)
-    answer = generate_answer(search_context, ques, api_key)
+    answer = generate_answer(search_context, standalone_question, api_key)
 
     if answer.lower() == "i don't know.":
         return "That's an interesting question, but I'm not sure it's quite relevant."
