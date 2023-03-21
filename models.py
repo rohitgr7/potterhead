@@ -48,7 +48,7 @@ def get_embeddings(text, api_key=None):
 
 def get_standalone_question(question, prev_questions, prev_answers, api_key):
     history = [(ques, ans) for ques, ans in zip(prev_questions, prev_answers)]
-    promp = f"""
+    prompt = f"""
     Given the following conversation and a follow up question, rephrase the follow up question to be a standalone
     question.
 
@@ -60,13 +60,13 @@ def get_standalone_question(question, prev_questions, prev_answers, api_key):
 
     headers = {"Content-type": "application/json", "Authorization": f"Bearer {api_key}"}
     json_data = {
-        "model": "text-davinci-003",  # text-davinci-003
-        "prompt": promp,
+        "model": "gpt-3.5-turbo",  # text-davinci-003
+        "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.2,
         "max_tokens": 128,
     }
-    response = requests.post("https://api.openai.com/v1/completions", headers=headers, json=json_data)
-    return response.json()["choices"][0]["text"].strip()
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=json_data)
+    return response.json()["choices"][0]["message"]["content"]
 
 
 def generate_answer(context, question, api_key):
@@ -89,13 +89,13 @@ def generate_answer(context, question, api_key):
 
     headers = {"Content-type": "application/json", "Authorization": f"Bearer {api_key}"}
     json_data = {
-        "model": "text-davinci-003",  # text-davinci-003
-        "prompt": prompt,
+        "model": "gpt-3.5-turbo",  # text-davinci-003
+        "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.2,
         "max_tokens": 128,
     }
-    response = requests.post("https://api.openai.com/v1/completions", headers=headers, json=json_data)
-    return response.json()["choices"][0]["text"].strip()
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=json_data)
+    return response.json()["choices"][0]["message"]["content"]
 
 
 def get_answer(all_contexts, question, splitter, prev_questions, prev_answers, api_key):

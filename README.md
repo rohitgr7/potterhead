@@ -6,7 +6,7 @@ Potterhead is an open-source chatbot that brings the magic of Harry Potter to li
 
 Live demo: https://potterhead.streamlit.app/
 
-To build your own and run locally create a `.env` file and set the following:
+To build your own and run locally create a `.streamlit/secrets.toml` file and set the following:
 
 ```console
 OPENAI_API_KEY="..."
