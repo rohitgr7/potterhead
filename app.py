@@ -29,7 +29,19 @@ def _main():
 
     st.markdown(
         """
-        <p style='display: block; text-align: left;'>Made by <a href="https://twitter.com/imgrohit">@imgrohit</a>, Built with <a href="https://openai.com/api/">Open AI GPT3</a></p>
+        <p style='display: block; text-align: left;'>Made by <a href="https://twitter.com/imgrohit">@imgrohit</a></p>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <p style='display: block; text-align: left;'>Built with <a href="https://openai.com/api">Open AI GPT3.5</a></p>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <p style='display: block; text-align: left;'>Code: <a href="https://github.com/rohitgr7/potterhead">rohitgr7/potterhead</a></p>
         """,
         unsafe_allow_html=True,
     )
